@@ -161,6 +161,9 @@ private:
     }
     
     static int ComputeAverageRating(const vector<int>& ratings) {
+        if (ratings.size() == 0) {
+            return 0;
+        }
         int rating_sum = 0;
         for (const int rating : ratings) {
             rating_sum += rating;
