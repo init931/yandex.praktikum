@@ -24,12 +24,6 @@ int ReadLineWithNumber() {
     return result;
 }
 
-bool IsValidWord(const string& word) {
-    return none_of(word.begin(), word.end(), [](char c) {
-        return c >= '\0' && c < ' ';
-    });
-}
-
 vector<string> SplitIntoWords(const string& text) {
     vector<string> words;
     string word;
@@ -38,28 +32,18 @@ vector<string> SplitIntoWords(const string& text) {
         return words;
     }
 
-    try {
-        for (const char c : text) {
-            if (c == ' ') {
-                if (!word.empty()) {
-                    words.push_back(word);
-                    word.clear();
-                }
-            } else {
-                word += c;
+    for (const char c : text) {
+        if (c == ' ') {
+            if (!word.empty()) {
+                words.push_back(word);
+                word.clear();
             }
-        }
-        if (!word.empty()) {
-            if (!IsValidWord(word)) {
-                throw invalid_argument("Word isn't valid. Word="s + word);
-            }
-            words.push_back(word);
+        } else {
+            word += c;
         }
     }
-    catch (const std::exception& ex) {
-        throw invalid_argument("SplitIntoWords(). "s + 
-            "Unable to parse word '"s + word + 
-            "'. Message="s + ex.what());
+    if (!word.empty()) {
+        words.push_back(word);
     }
 
     return words;
@@ -81,23 +65,13 @@ struct Document {
 
 template <typename StringContainer>
 set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings) {
-    try {
-        set<string> non_empty_strings;
-        for (const string& str : strings) {
-            if (!str.empty()) {
-                if (!IsValidWord(str)) {
-                    throw invalid_argument("Word isn't valid. str="s + str);
-                }
-                non_empty_strings.insert(str);
-            }
+    set<string> non_empty_strings;
+    for (const string& str : strings) {
+        if (!str.empty()) {
+            non_empty_strings.insert(str);
         }
-        return non_empty_strings;
     }
-    catch (const std::exception& ex) {
-        throw invalid_argument("MakeUniqueNonEmptyStrings(). "s +
-            "Unable to parse arg 'strings'. "s + 
-            "Message="s + ex.what());
-    }
+    return non_empty_strings;
 }
 
 enum class DocumentStatus {
@@ -112,6 +86,15 @@ public:
     template <typename StringContainer>
     explicit SearchServer(const StringContainer& stop_words)
         : stop_words_(MakeUniqueNonEmptyStrings(stop_words)) {
+
+        //не использовал std::all_of() т к в сообщение об ошибке 
+        //вывожу не валидное слово
+        for (const string& word : stop_words_) {
+            if (!IsValidWord(word)) {
+                throw invalid_argument("Stop word isn't valid. "s +
+                    "Word="s + word);
+            }
+        }
     }
 
     explicit SearchServer(const string& stop_words_text)
@@ -220,6 +203,13 @@ private:
 
     bool IsStopWord(const string& word) const {
         return stop_words_.count(word) > 0;
+    }
+
+    static bool IsValidWord(const string& word) {
+        // A valid word must not contain special characters
+        return none_of(word.begin(), word.end(), [](char c) {
+            return c >= '\0' && c < ' ';
+        });
     }
 
     vector<string> SplitIntoWordsNoStop(const string& text) const {
