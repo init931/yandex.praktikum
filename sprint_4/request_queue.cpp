@@ -6,6 +6,17 @@ RequestQueue::RequestQueue(const SearchServer& search_server) :
     empty_query_count_ = 0;
 }
 
+template <typename DocumentPredicate>
+std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, 
+                                                   DocumentPredicate document_predicate) {
+
+    auto ret = search_server_.FindTopDocuments(raw_query, document_predicate);
+    QueryResult result;
+    result.result_count = ret.size();
+    AddQueue(ret);
+    return ret;
+}
+
 std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, DocumentStatus status) {
     auto ret = search_server_.FindTopDocuments(raw_query, status);
     QueryResult result;
