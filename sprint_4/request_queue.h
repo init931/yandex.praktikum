@@ -24,3 +24,14 @@ private:
 
 	void AddQueue(const QueryResult& request);
 };
+
+template <typename DocumentPredicate>
+std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, 
+                                                   DocumentPredicate document_predicate) {
+
+    auto ret = search_server_.FindTopDocuments(raw_query, document_predicate);
+    QueryResult result;
+    result.result_count = ret.size();
+    AddQueue(ret);
+    return ret;
+}
