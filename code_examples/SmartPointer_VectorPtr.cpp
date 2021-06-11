@@ -13,8 +13,13 @@ public:
     PtrVector(const PtrVector& other) {
         items_.reserve(other.GetItems().size());
         for (auto* item : other.GetItems()) {
-            auto copy = item;
-            items_.push_back(copy);
+            if (item == nullptr) {
+                items_.push_back(item);
+            }
+            else {
+                auto copy = new T(*item);
+                items_.push_back(copy);
+            }
         }
     }
 
@@ -34,6 +39,33 @@ public:
     // Возвращает константную ссылку на вектор указателей
     vector<T*> const& GetItems() const noexcept {
         return items_;
+    }
+
+    // Копирующий оператор присваивания
+    PtrVector& operator=(const PtrVector& rhs) {
+        if (this != &rhs) {
+            // Реализация операции присваивания с помощью идиомы Copy-and-swap
+            // Если исключение будет выброшено, то на текущий объект оно не повлияет
+            auto rhs_copy(rhs);
+
+            // rhs_copy содержит копию правого аргумента
+            // Обмениваемся с ним данными
+            swap(rhs_copy);
+            // теперь текущий объект содержит копию правого аргумента,
+            // а rhs_copy - прежнее состояние текущего объекта, которое при выходе
+            // из блока будет разрушено
+        }
+
+        return *this;
+    }
+
+    // Обменивает состояние текущего объекта с other без выбрасывания исключений
+    void swap(PtrVector& other) noexcept {
+        items_.swap(other.GetItems());
+    }
+    
+    bool operator!=(const PtrVector& rhs) {
+        return !(this != rhs);
     }
 
 private:
