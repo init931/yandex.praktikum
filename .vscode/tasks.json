@@ -4,15 +4,45 @@
         {
             "type": "shell",
             "label": "clang++ build active file",
-            "command": "/usr/bin/clang++",
+
+            /* NORMAL */
+            //"command": "/usr/bin/clang++",
+            // "args": [
+            //     "-std=c++17",
+            //     "-stdlib=libc++",
+            //     "-g",
+            //     "${file}",
+            //     "-o",
+            //     "${workspaceRoot}/bin/${fileBasenameNoExtension}"
+            // ],
+
+            /* LIBCPP_DEBUG */
+            // "command": "/usr/local/Cellar/gcc/11.1.0_1/bin/g++-11",
+            // "args": [
+            //     "-std=c++17",
+            //     "-g",
+            //     "${file}",
+            //     "-o",
+            //     "${workspaceRoot}/bin/${fileBasenameNoExtension}",
+            //     "-D_GLIBCXX_DEBUG",
+            //     "-D_GLIBCXX_DEBUG_PEDANTIC",
+            //     "-D_LIBCPP_DEBUG=1"
+            // ],
+
+            /* fsanitize */
+            "command": "/usr/local/Cellar/gcc/11.1.0_1/bin/g++-11",
             "args": [
                 "-std=c++17",
-                "-stdlib=libc++",
                 "-g",
                 "${file}",
                 "-o",
-                "${workspaceRoot}/bin/${fileBasenameNoExtension}"
+                "${workspaceRoot}/bin/${fileBasenameNoExtension}",
+                "-fsanitize=address",
+                //"-O1",
+                //"-fno-omit-frame-pointer",
+                //"-fno-optimize-sibling-calls"
             ],
+
             "options": {
                 "cwd": "${workspaceFolder}"
             },
