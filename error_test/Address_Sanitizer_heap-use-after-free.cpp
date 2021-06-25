@@ -15,5 +15,6 @@ const string& GetMedianString(vector<string> v) {
 int main() {
     vector<string> v = {"cat"s, "dog"s, "elephant"s, "monkey"s, "llama"s};
     const string& res = GetMedianString(v);
-    cout << res << endl;
+    //heap-use-after-free
+    cout << res << endl; //ошибка в обращении по ссылке которую уже уничтожили
 }

@@ -15,8 +15,8 @@
             "environment": [],
             "externalConsole": true,
             "MIMode": "lldb",
-            "preLaunchTask": "clang++ build active file",
-            
+            "preLaunchTask": "clang++ build active file",   
+            "envFile": "${workspaceRoot}/.env",
         }
     ]
 }

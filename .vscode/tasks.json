@@ -6,7 +6,7 @@
             "label": "clang++ build active file",
 
             /* NORMAL */
-            //"command": "/usr/bin/clang++",
+            // "command": "/usr/bin/clang++",
             // "args": [
             //     "-std=c++17",
             //     "-stdlib=libc++",
@@ -38,6 +38,7 @@
                 "-o",
                 "${workspaceRoot}/bin/${fileBasenameNoExtension}",
                 "-fsanitize=address",
+                //!!!"-fsanitize=memory" не компилится, нужен другой компилятор
                 //"-O1",
                 //"-fno-omit-frame-pointer",
                 //"-fno-optimize-sibling-calls"
