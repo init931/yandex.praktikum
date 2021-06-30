@@ -6,15 +6,15 @@
             "label": "clang++ build active file",
 
             /* NORMAL */
-            // "command": "/usr/bin/clang++",
-            // "args": [
-            //     "-std=c++17",
-            //     "-stdlib=libc++",
-            //     "-g",
-            //     "${file}",
-            //     "-o",
-            //     "${workspaceRoot}/bin/${fileBasenameNoExtension}"
-            // ],
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-stdlib=libc++",
+                "-g",
+                "${file}",
+                "-o",
+                "${workspaceRoot}/bin/${fileBasenameNoExtension}"
+            ],
 
             /* LIBCPP_DEBUG */
             // "command": "/usr/local/Cellar/gcc/11.1.0_1/bin/g++-11",
@@ -30,19 +30,19 @@
             // ],
 
             /* fsanitize */
-            "command": "/usr/local/Cellar/gcc/11.1.0_1/bin/g++-11",
-            "args": [
-                "-std=c++17",
-                "-g",
-                "${file}",
-                "-o",
-                "${workspaceRoot}/bin/${fileBasenameNoExtension}",
-                "-fsanitize=address",
-                //!!!"-fsanitize=memory" не компилится, нужен другой компилятор
-                //"-O1",
-                //"-fno-omit-frame-pointer",
-                //"-fno-optimize-sibling-calls"
-            ],
+            // "command": "/usr/local/Cellar/gcc/11.1.0_1/bin/g++-11",
+            // "args": [
+            //     "-std=c++17",
+            //     "-g",
+            //     "${file}",
+            //     "-o",
+            //     "${workspaceRoot}/bin/${fileBasenameNoExtension}",
+            //     "-fsanitize=address",
+            //     //!!!"-fsanitize=memory" не компилится, нужен другой компилятор
+            //     //"-O1",
+            //     //"-fno-omit-frame-pointer",
+            //     //"-fno-optimize-sibling-calls"
+            // ],
 
             "options": {
                 "cwd": "${workspaceFolder}"
