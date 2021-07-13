@@ -6,15 +6,15 @@
             "label": "clang++ build active file",
 
             /* NORMAL */
-            "command": "/usr/bin/clang++",
-            "args": [
-                "-std=c++17",
-                "-stdlib=libc++",
-                "-g",
-                "${file}",
-                "-o",
-                "${workspaceRoot}/bin/${fileBasenameNoExtension}"
-            ],
+            // "command": "/usr/bin/clang++",
+            // "args": [
+            //     "-std=c++17",
+            //     "-stdlib=libc++",
+            //     "-g",
+            //     "${file}",
+            //     "-o",
+            //     "${workspaceRoot}/bin/${fileBasenameNoExtension}"
+            // ],
 
             /* LIBCPP_DEBUG */
             // "command": "/usr/local/Cellar/gcc/11.1.0_1/bin/g++-11",
@@ -43,6 +43,18 @@
             //     //"-fno-omit-frame-pointer",
             //     //"-fno-optimize-sibling-calls"
             // ],
+
+            /*PARALLELISM*/
+            "command": "/usr/local/Cellar/gcc/11.1.0_1/bin/g++-11",
+            "args": [
+                "-std=c++17",
+                //"-ltbb",
+                "-lpthread",
+                "-g",
+                "${file}",
+                "-o",
+                "${workspaceRoot}/bin/${fileBasenameNoExtension}"
+            ],
 
             "options": {
                 "cwd": "${workspaceFolder}"
