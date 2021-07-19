@@ -91,10 +91,8 @@ void SearchServer::RemoveDocument(int document_id) {
         return;
     }
     documents_.erase(document_id);
-    document_ids_.erase(
-        std::remove(document_ids_.begin(), document_ids_.end(), document_id), 
-        document_ids_.end()
-    );
+    auto doc_to_rm_it = find(document_ids_.begin(), document_ids_.end(), document_id);
+    document_ids_.erase(doc_to_rm_it);
 
     for (const auto& [word, freq] : document_to_word_freqs_.at(document_id)) {
         std::map<int, double>& word_doc_id_map = word_to_document_freqs_[word];
