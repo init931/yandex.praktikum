@@ -23,7 +23,7 @@ void SearchServer::AddDocument(int document_id, const std::string& document,
         document_to_word_freqs_[document_id][word] += inv_word_count;
     }
     documents_.emplace(document_id, DocumentData{ComputeAverageRating(ratings), status});
-    document_ids_.push_back(document_id);
+    document_ids_.insert(document_id);
 }
 
 std::vector<Document> SearchServer::FindTopDocuments(
@@ -67,10 +67,10 @@ std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument
     return {matched_words, documents_.at(document_id).status};
 }
 
-std::vector<int>::const_iterator SearchServer::begin() const {
+std::set<int>::const_iterator SearchServer::begin() const {
     return document_ids_.cbegin();
 }
-std::vector<int>::const_iterator SearchServer::end() const {
+std::set<int>::const_iterator SearchServer::end() const {
     return document_ids_.cend();
 }
 
@@ -91,8 +91,7 @@ void SearchServer::RemoveDocument(int document_id) {
         return;
     }
     documents_.erase(document_id);
-    auto doc_to_rm_it = find(document_ids_.begin(), document_ids_.end(), document_id);
-    document_ids_.erase(doc_to_rm_it);
+    document_ids_.erase(document_id);
 
     for (const auto& [word, freq] : document_to_word_freqs_.at(document_id)) {
         std::map<int, double>& word_doc_id_map = word_to_document_freqs_[word];
