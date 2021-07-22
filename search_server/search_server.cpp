@@ -87,6 +87,14 @@ const std::map<std::string, double>& SearchServer::GetWordFrequencies(int docume
 }
 
 void SearchServer::RemoveDocument(int document_id) {
+    RemoveDocument(std::execution::seq, document_id);
+}
+
+void SearchServer::RemoveDocument(const std::execution::parallel_policy p, int document_id) {
+    RemoveDocument(std::execution::seq, document_id);
+}
+
+void SearchServer::RemoveDocument(const std::execution::sequenced_policy p, int document_id) {
     if (document_to_word_freqs_.count(document_id) == 0) {
         return;
     }

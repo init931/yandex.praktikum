@@ -48,14 +48,23 @@ int main() {
         search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, {1, 2});
     }
 
-    const std::vector<std::string> queries = {
-        "nasty rat -not"s,
-        "not very funny nasty pet"s,
-        "curly hair"s
+    const std::string query = "curly and funny"s;
+
+    auto report = [&search_server, &query] {
+        std::cout << search_server.GetDocumentCount() << " documents total, "s
+            << search_server.FindTopDocuments(query).size() << " documents for query ["s << query << "]"s << std::endl;
     };
-    for (const Document& document : ProcessQueriesJoined(search_server, queries)) {
-        std::cout << "Document "s << document.id << " matched with relevance "s << document.relevance << std::endl;
-    }
+
+    report();
+    // однопоточная версия
+    search_server.RemoveDocument(5);
+    report();
+    // однопоточная версия
+    search_server.RemoveDocument(std::execution::seq, 1);
+    report();
+    // многопоточная версия
+    search_server.RemoveDocument(std::execution::par, 2);
+    report();
 
     return 0;
 }
