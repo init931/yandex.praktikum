@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 #include <deque>
+#include <execution>
 
 #include "read_input_functions.h"
 #include "test_example_functions.h"
@@ -18,9 +19,7 @@
 #include "log_duration.h"
 #include "process_queries.h"
 
-//почему без этих вставок локальный линковщик не может собрать файл?
-//хотя в тренажере запускается без этих include
-//(еще один такой include есть в search_server.cpp)
+//
 #include "read_input_functions.cpp"
 #include "test_example_functions.cpp"
 #include "document.cpp"
@@ -38,34 +37,30 @@ int main() {
     int id = 0;
     for (
         const std::string& text : {
-            "funny pet and nasty rat"s,
-            "funny pet with curly hair"s,
-            "funny pet and not very nasty rat"s,
-            "pet with rat and rat and rat"s,
-            "nasty rat with curly hair"s,
+            "white cat and yellow hat"s,
+            "curly cat curly tail"s,
+            "nasty dog with big eyes"s,
+            "nasty pigeon john"s,
         }
     ) {
         search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, {1, 2});
     }
 
-    const std::string query = "curly and funny -not"s;
-
-    {
-        const auto [words, status] = search_server.MatchDocument(query, 1);
-        std::cout << words.size() << " words for document 1"s << std::endl;
-        // 1 words for document 1
+    std::cout << "ACTUAL by default:"s << std::endl;
+        // последовательная версия
+    for (const Document& document : search_server.FindTopDocuments("curly nasty cat"s)) {
+        PrintDocument(document);
+    }
+    std::cout << "BANNED:"s << std::endl;
+        // последовательная версия
+    for (const Document& document : search_server.FindTopDocuments(std::execution::seq, "curly nasty cat"s, DocumentStatus::BANNED)) {
+        PrintDocument(document);
     }
 
-    {
-        const auto [words, status] = search_server.MatchDocument(std::execution::seq, query, 2);
-        std::cout << words.size() << " words for document 2"s << std::endl;
-        // 2 words for document 2
-    }
-
-    {
-        const auto [words, status] = search_server.MatchDocument(std::execution::par, query, 3);
-        std::cout << words.size() << " words for document 3"s << std::endl;
-        // 0 words for document 3
+    std::cout << "Even ids:"s << std::endl;
+        // параллельная версия
+    for (const Document& document : search_server.FindTopDocuments(std::execution::par, "curly nasty cat"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
+        PrintDocument(document);
     }
 
     return 0;
