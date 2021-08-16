@@ -7,6 +7,8 @@
 #include <set>
 #include <algorithm>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 //Остановка
 struct Stop {
@@ -37,7 +39,7 @@ struct Bus {
 class TransportCatalogue {
 public:
     TransportCatalogue()
-        : stop_index_({}), bus_index_({}) {
+        : stop_index_({}), bus_index_({}), stop_to_bus_({}) {
 
     }
 
@@ -57,7 +59,12 @@ public:
     std::vector<std::string_view> Split(std::string_view input, char c);
     std::string_view Trim(std::string_view in);
 
+    // получение всех маршрутов у остановки
+    void GetBusesByStop(const Stop* stop, std::set<std::string>& out);
+
 private:
     std::vector<Stop> stop_index_;
     std::vector<Bus> bus_index_;
+    //std::unordered_map<const Stop*, std::unordered_set<Bus*>> stop_to_bus_; //не работается нормально с такой структурой. где-то в память проваливаюсь не туда. скорее всего на it->second.insert(&*bus_shure);
+    std::unordered_map<std::string, std::set<std::string>> stop_to_bus_; //почему строки? коммент выше
 };

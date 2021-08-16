@@ -2,8 +2,39 @@
 
 #include "transport_catalogue.h"
 
+#include <algorithm>
+
 void TransportCatalogue::AddBus(Bus& bus) {
-    bus_index_.push_back(bus); //??? copy? 
+    std::string name = bus.Name;
+    bus_index_.push_back(bus); //??? copy?
+
+    auto bus_shure = std::find_if(bus_index_.begin(), bus_index_.end(), [&name](Bus& item) {
+        return item.Name == name;
+    });
+
+    // for (const Stop* item : bus_shure->Stops) {
+    //     auto it = stop_to_bus_.find(item);
+    //     if (it == stop_to_bus_.end()) {
+    //         stop_to_bus_.insert({ item, {} });
+    //         it = stop_to_bus_.find(item);
+    //     }
+
+    //     if (it->second.find(&*bus_shure) == it->second.end()) {
+    //         it->second.insert(&*bus_shure);
+    //     }
+    // }
+
+    for (const Stop* item : bus_shure->Stops) {
+        auto it = stop_to_bus_.find(item->Name);
+        if (it == stop_to_bus_.end()) {
+            stop_to_bus_.insert({ item->Name, {} });
+            it = stop_to_bus_.find(item->Name);
+        }
+
+        if (it->second.find(bus_shure->Name) == it->second.end()) {
+            it->second.insert(bus_shure->Name);
+        }
+    }
 }
 
 void TransportCatalogue::AddStop(Stop& stop) {
@@ -64,4 +95,14 @@ std::string_view TransportCatalogue::Trim(std::string_view in) {
     auto right = in.end() - 1;
     for (; right > left && isspace(*right); --right);
     return std::string_view(left, std::distance(left, right) + 1);
+}
+
+ void TransportCatalogue::GetBusesByStop(const Stop* stop, std::set<std::string>& out) {
+    const std::string& name = stop->Name;
+
+    if (std::count_if(stop_index_.begin(), stop_index_.end(), [name](Stop& stop){return stop.Name==name;}) > 0) {
+    //if (stop_to_bus_.contains(&stop)) {
+        out = stop_to_bus_[stop->Name];
+    //}
+    }
 }

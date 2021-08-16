@@ -25,6 +25,9 @@ public:
     void GetInfoBus(std::ostream& out, const std::string& input);
     void ProcessOutputRequests(std::ostream& out, const std::vector<std::string>& requests);
 
+    // Запрос должен вывести информацию об остановке X
+    void GetInfoStop(std::ostream& out, const std::string& input);
+
 private:
     TransportCatalogue& tc_;
     std::string_view parseSearchBus(const std::string& input);

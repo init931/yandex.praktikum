@@ -39,6 +39,10 @@ void StatReader::ProcessOutputRequests(std::ostream& out, const std::vector<std:
         if (item.rfind("Bus "s, 0) == 0) {
             GetInfoBus(out, item);
         }
+
+        if (item.rfind("Stop "s, 0) == 0) {
+            GetInfoStop(out, item);
+        }
     }
 }
 
@@ -46,4 +50,35 @@ std::string_view StatReader::parseSearchBus(const std::string& input) {
     std::string_view sv(input);
     sv.remove_prefix(4);
     return sv;
+}
+
+void StatReader::GetInfoStop(std::ostream& out, const std::string& input) {
+    // Запрос должен вывести информацию об остановке X в следующем формате:
+    // Stop X: buses bus1 bus2 ... busN
+
+    // Stop Samara: not found
+    // Stop Prazhskaya: no buses
+    // Stop Biryulyovo Zapadnoye: buses 256 828
+
+    std::string_view name(input);
+    name.remove_prefix(5);
+    const auto stop = tc_.SearchStop(name);
+    if (stop == nullptr) {
+        out << "Stop "s << name << ": not found"s << std::endl;
+        return;
+    }
+
+    std::set<std::string> buses;
+    tc_.GetBusesByStop(stop, buses);
+    if (buses.size() > 0) {
+        out << "Stop "s << name << ": buses"s;
+        for (const std::string& item : buses) {
+            //auto t1 = item->Name;
+            out << " "s << item;
+        }
+        out << std::endl;
+    }
+    else {
+        out << "Stop "s << name << ": no buses"s << std::endl;
+    }
 }

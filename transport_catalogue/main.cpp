@@ -22,7 +22,9 @@ int main() {
     StatReader sr(tc);
 
     std::cout << std::setprecision(6);
-    std::ifstream input_file("/Users/maierkirill/Documents/yandex_practikum/git/transport_catalogue/input1.txt");
+    
+    std::ifstream input_file("../transport_catalogue/input1.txt");
+    //std::istream& input_file = std::cin;
 
     int req_count;
 	input_file >> req_count;
