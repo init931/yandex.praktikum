@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <optional>
 
 //Остановка
 struct Stop {
@@ -47,7 +48,7 @@ public:
     void AddBus(Bus& bus);
 
     // добавление остановки в базу
-    void AddStop(Stop& stop);
+    void AddStop(Stop& stop, std::unordered_map<std::string, int> distances);
 
     // поиск маршрута по имени
     Bus* SearchBus(std::string_view& name);
@@ -55,16 +56,21 @@ public:
     // поиск остановки по имени
     Stop* SearchStop(std::string_view& name);
 
-    //эти 2 метода тут потому что это единственный общий класс для чтения и вывода
+    //эти 3 метода тут потому что это единственный общий класс для чтения и вывода
     std::vector<std::string_view> Split(std::string_view input, char c);
+    std::vector<std::string_view> Split(std::string_view input, std::string& c);
     std::string_view Trim(std::string_view in);
 
     // получение всех маршрутов у остановки
     void GetBusesByStop(const Stop* stop, std::set<std::string>& out);
+
+    // получение фактического расстояния между двумя остановками
+    std::optional<int> GetStopToStopDistance(const Stop* stopStart, const Stop* stopEnd);
 
 private:
     std::vector<Stop> stop_index_;
     std::vector<Bus> bus_index_;
     //std::unordered_map<const Stop*, std::unordered_set<Bus*>> stop_to_bus_; //не работается нормально с такой структурой. где-то в память проваливаюсь не туда. скорее всего на it->second.insert(&*bus_shure);
     std::unordered_map<std::string, std::set<std::string>> stop_to_bus_; //почему строки? коммент выше
+    std::unordered_map<std::string, std::unordered_map<std::string, int>> stop_to_stop_distance_;
 };

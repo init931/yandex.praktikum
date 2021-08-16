@@ -27,6 +27,5 @@ public:
 private:
     TransportCatalogue& tc_;
 
-    Stop parseStop(const std::string input);
     Bus parseBus(const std::string input);
 };

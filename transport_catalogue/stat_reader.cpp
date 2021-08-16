@@ -5,6 +5,7 @@
 void StatReader::GetInfoBus(std::ostream& out, const std::string& input) {
     //Вывести информацию об автобусе X в следующем формате:
     //Bus X: R stops on route, U unique stops, L route length
+    //Bus 750: 7 stops on route, 3 unique stops, 27400 route length, 1.30853 curvature
 
     std::string_view name = parseSearchBus(input);
     Bus* bus = tc_.SearchBus(name);
@@ -16,6 +17,7 @@ void StatReader::GetInfoBus(std::ostream& out, const std::string& input) {
 
     std::unordered_set<std::string_view> stop_names;
     double distance = 0;
+    double fact_len = 0;
     for (size_t i = 0; i < bus->Stops.size(); ++i) {
         const Stop* item = bus->Stops[i];
         stop_names.insert(item->Name);
@@ -24,13 +26,23 @@ void StatReader::GetInfoBus(std::ostream& out, const std::string& input) {
             const Stop* item_before = bus->Stops[i - 1];
             distance += ComputeDistance({item_before->Latitude, item_before->Longitude}, 
                                         {item->Latitude, item->Longitude});
+
+            std::optional<int> dis = tc_.GetStopToStopDistance(item_before, item);
+            if (dis.has_value()) {
+                fact_len += dis.value();
+            }
+            else {
+                //???
+            }
         }
     }
+    double curvature = fact_len / distance;
     
     out << "Bus "s << name << ": "s ;
     out << bus->Stops.size() << " stops on route, "s;
     out << stop_names.size() << " unique stops, "s;
-    out << distance << " route length"s;
+    out << fact_len << " route length, "s;
+    out << curvature << " curvature"s;
     out << std::endl;
 }
 

@@ -37,8 +37,32 @@ void TransportCatalogue::AddBus(Bus& bus) {
     }
 }
 
-void TransportCatalogue::AddStop(Stop& stop) {
+void TransportCatalogue::AddStop(Stop& stop, std::unordered_map<std::string, int> distances) {
     stop_index_.push_back(stop); //??? copy?
+
+    if (stop_to_stop_distance_.count(stop.Name) == 0) {
+        std::pair<std::string, std::unordered_map<std::string, int>> elem (stop.Name, {});
+        stop_to_stop_distance_.insert(elem);
+    }
+
+    //Возможно задание разного расстояния между двумя остановками в разных направлениях
+    std::unordered_map<std::string, int>& stops = stop_to_stop_distance_[stop.Name];
+    for(const std::pair<std::string, int>& item : distances) {
+        //жестко переопределяем
+        stops[item.first] = item.second;
+    }
+
+    //мягко переопределяем
+    for(const std::pair<std::string, int>& item : distances) {
+        if (stop_to_stop_distance_.count(item.first) == 0) {
+            std::pair<std::string, std::unordered_map<std::string, int>> elem (item.first, {});
+            stop_to_stop_distance_.insert(elem);
+        }
+        std::unordered_map<std::string, int>& item_stops = stop_to_stop_distance_[item.first];
+        if (item_stops.count(stop.Name) == 0) {
+            item_stops[stop.Name] = item.second;
+        }
+    }
 }
 
 Bus* TransportCatalogue::SearchBus(std::string_view& name) {
@@ -84,6 +108,29 @@ std::vector<std::string_view> TransportCatalogue::Split(std::string_view input, 
     }
 }
 
+std::vector<std::string_view> TransportCatalogue::Split(std::string_view input, std::string& c) {
+    std::vector<std::string_view> res;
+    while (true) {
+        std::string_view l;
+        std::string_view r;
+        auto cpos = input.find(c);
+        if (cpos == input.npos) {
+            l = input;
+            r = {};
+        }
+        else {
+            l = input.substr(0, cpos);
+            r = input.substr(cpos + c.size());
+        }
+
+        res.push_back(l);
+        if (r.size() == 0) {
+            return res;
+        }
+        input = r;
+    }
+}
+
 std::string_view TransportCatalogue::Trim(std::string_view in) {
     auto left = in.begin();
     for (;; ++left) {
@@ -105,4 +152,16 @@ std::string_view TransportCatalogue::Trim(std::string_view in) {
         out = stop_to_bus_[stop->Name];
     //}
     }
+}
+
+std::optional<int> TransportCatalogue::GetStopToStopDistance(const Stop* stopStart, const Stop* stopEnd) {
+    std::optional<int> ret;
+    auto itStart = stop_to_stop_distance_.find(stopStart->Name);
+    if (itStart != stop_to_stop_distance_.end()) {
+        auto it = itStart->second.find(stopEnd->Name);
+        if (it != itStart->second.end()) {
+            ret = (*it).second;
+        }
+    }
+    return ret;
 }

@@ -7,16 +7,6 @@
 using std::string_literals::operator""s;
 
 void InputReader::AddStop(const std::string input) {
-    Stop stop = parseStop(input);
-    tc_.AddStop(stop);
-}
-
-void InputReader::AddBus(const std::string input) {
-    Bus bus = parseBus(input);
-    tc_.AddBus(bus);
-}
-
-Stop InputReader::parseStop(const std::string input) {
     //Остановка с названием X и координатами latitude и longitude
     
     std::vector<std::string_view> spt = tc_.Split(input, ':');
@@ -29,8 +19,35 @@ Stop InputReader::parseStop(const std::string input) {
     std::string lon_str { spt_coords[1] };
     double lon = std::stod(lon_str);
 
-    Stop ret(name, lat, lon);
-    return ret;
+    Stop stop(name, lat, lon);
+
+    std::unordered_map<std::string, int> distances;
+    if (spt_coords.size() > 2) {
+        //растояние до других остановок
+        //Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
+
+        std::string spt_div = "m to "s;
+        for (size_t i = 2; i < spt_coords.size(); ++i) {
+            std::string_view item = spt_coords[i];
+            std::vector<std::string_view> spt_dis = tc_.Split(item, spt_div);
+            std::string distance_to_stop_str { spt_dis[0] };
+
+            if (distance_to_stop_str.find_first_not_of(" 0123456789"s) != std::string::npos) {
+                throw std::logic_error("Возможно в расстоянии km а не m. Или что-то другое. Строка = "s + distance_to_stop_str);
+            }
+
+            int distance_to_stop = std::stoi(distance_to_stop_str);
+            std::string stop_name { spt_dis[1] };
+            distances[stop_name] = distance_to_stop;
+        }
+    }
+
+    tc_.AddStop(stop, distances);
+}
+
+void InputReader::AddBus(const std::string input) {
+    Bus bus = parseBus(input);
+    tc_.AddBus(bus);
 }
 
 Bus InputReader::parseBus(const std::string input) {

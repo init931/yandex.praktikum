@@ -11,6 +11,8 @@
 #include "transport_catalogue.h"
 #include "geo.h"
 
+#include <optional>
+
 using std::string_literals::operator""s;
 
 class StatReader {
