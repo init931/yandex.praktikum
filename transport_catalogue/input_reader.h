@@ -8,24 +8,30 @@
 
 #include "transport_catalogue.h"
 
-class InputReader {
-public:
-    InputReader() = delete;
-    InputReader(TransportCatalogue& tc) 
-        : tc_(tc) {
+namespace Transport {
+    namespace Input {
+        using namespace Transport::Core;
 
+        class InputReader {
+        public:
+            InputReader() = delete;
+            InputReader(TransportCatalogue& tc) 
+                : tc_(tc) {
+
+            }
+
+            //Stop X: latitude, longitude
+            void AddStop(const std::string input);
+
+            //Bus X: описание маршрута
+            void AddBus(const std::string input);
+
+            void ProcessInputRequests(const std::vector<std::string>& requests);
+
+        private:
+            TransportCatalogue& tc_;
+
+            Bus parseBus(const std::string input);
+        };
     }
-
-    //Stop X: latitude, longitude
-    void AddStop(const std::string input);
-
-    //Bus X: описание маршрута
-    void AddBus(const std::string input);
-
-    void ProcessInputRequests(const std::vector<std::string>& requests);
-
-private:
-    TransportCatalogue& tc_;
-
-    Bus parseBus(const std::string input);
-};
+}

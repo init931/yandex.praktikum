@@ -13,24 +13,27 @@
 
 #include <optional>
 
-using std::string_literals::operator""s;
+namespace Transport::Statistic {
+    using std::string_literals::operator""s;
+    using namespace Transport::Core;
 
-class StatReader {
-public:
-    StatReader() = delete;
-    StatReader(TransportCatalogue& tc) 
-        : tc_(tc) {
+    class StatReader {
+    public:
+        StatReader() = delete;
+        StatReader(TransportCatalogue& tc) 
+            : tc_(tc) {
 
-    }
+        }
 
-    // получение информации о маршруте
-    void GetInfoBus(std::ostream& out, const std::string& input);
-    void ProcessOutputRequests(std::ostream& out, const std::vector<std::string>& requests);
+        // получение информации о маршруте
+        void GetInfoBus(std::ostream& out, const std::string& input);
+        void ProcessOutputRequests(std::ostream& out, const std::vector<std::string>& requests);
 
-    // Запрос должен вывести информацию об остановке X
-    void GetInfoStop(std::ostream& out, const std::string& input);
+        // Запрос должен вывести информацию об остановке X
+        void GetInfoStop(std::ostream& out, const std::string& input);
 
-private:
-    TransportCatalogue& tc_;
-    std::string_view parseSearchBus(const std::string& input);
-};
+    private:
+        TransportCatalogue& tc_;
+        std::string_view parseSearchBus(const std::string& input);
+    };
+}

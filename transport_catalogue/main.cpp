@@ -16,6 +16,9 @@
 
 using std::string_literals::operator""s;
 
+using namespace Transport::Input;
+using namespace Transport::Statistic;
+
 int main() {
     TransportCatalogue tc;
     InputReader ir(tc);
